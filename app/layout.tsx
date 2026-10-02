@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Oswald } from "next/font/google";
-
 import "./globals.css";
 import "react-toastify/dist/ReactToastify.css";
 
