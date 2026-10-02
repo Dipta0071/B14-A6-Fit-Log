@@ -100,3 +100,5 @@ fitlog/
 ├── types/
 │   └── workout.ts
 └── README.md
+varcel app link:https://b14-a6-fit-log-indol-psi.vercel.app/
+github repository link:https://github.com/Dipta0071/B14-A6-Fit-Log
