@@ -6,7 +6,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { Workout } from "@/types/workout";
 
 interface FitnessContextType {
@@ -21,9 +21,9 @@ interface FitnessContextType {
   removeSavedWorkout: (id: number) => void;
 }
 
-const FitnessContext = createContext<
-  FitnessContextType | undefined
->(undefined);
+const FitnessContext = createContext<FitnessContextType | undefined>(
+  undefined
+);
 
 interface FitnessProviderProps {
   children: ReactNode;
@@ -35,74 +35,126 @@ export function FitnessProvider({
   const [plan, setPlan] = useState<Workout[]>([]);
   const [saved, setSaved] = useState<Workout[]>([]);
 
-  // Add workout to today's plan
+  // --------------------------------
+  // ADD WORKOUT TO TODAY'S PLAN
+  // --------------------------------
   const addToPlan = (workout: Workout) => {
-    setPlan((currentPlan) => {
-      const alreadyAdded = currentPlan.some(
-        (item) => item.id === workout.id
+    // Prevent duplicate workout
+    const alreadyAdded = plan.some(
+      (item) => item.id === workout.id
+    );
+
+    if (alreadyAdded) {
+      toast.info("This workout is already in your plan.");
+      return;
+    }
+
+    // Maximum 5 workouts
+    if (plan.length >= 5) {
+      toast.warning(
+        "Your plan is full. You can add a maximum of 5 workouts."
       );
+      return;
+    }
 
-      if (alreadyAdded) {
-        toast.info("This workout is already in today's plan.");
-        return currentPlan;
-      }
+    setPlan((currentPlan) => [
+      ...currentPlan,
+      workout,
+    ]);
 
-      if (currentPlan.length >= 5) {
-        toast.warning(
-          "Today's plan can contain only 5 workouts."
-        );
-        return currentPlan;
-      }
-
-      toast.success("Added to today's plan.");
-
-      return [...currentPlan, workout];
-    });
+    toast.success(`${workout.name} added to today's plan.`);
   };
 
-  // Remove workout
+  // --------------------------------
+  // REMOVE WORKOUT FROM PLAN
+  // --------------------------------
   const removeFromPlan = (id: number) => {
-    setPlan((currentPlan) =>
-      currentPlan.filter((workout) => workout.id !== id)
+    const workout = plan.find(
+      (item) => item.id === id
     );
 
-    toast.success("Workout removed from today's plan.");
-  };
-
-  // Mark workout as done
-  const markAsDone = (id: number) => {
     setPlan((currentPlan) =>
-      currentPlan.filter((workout) => workout.id !== id)
+      currentPlan.filter(
+        (item) => item.id !== id
+      )
     );
 
-    toast.success("Workout marked as done.");
-  };
-
-  // Save workout
-  const saveWorkout = (workout: Workout) => {
-    setSaved((currentSaved) => {
-      const alreadySaved = currentSaved.some(
-        (item) => item.id === workout.id
+    if (workout) {
+      toast.info(
+        `${workout.name} removed from your plan.`
       );
-
-      if (alreadySaved) {
-        toast.info("This workout is already saved.");
-        return currentSaved;
-      }
-
-      toast.success("Workout saved for later.");
-
-      return [...currentSaved, workout];
-    });
+    } else {
+      toast.info("Workout removed from your plan.");
+    }
   };
 
-  // Remove saved workout
-  const removeSavedWorkout = (id: number) => {
-    setSaved((currentSaved) =>
-      currentSaved.filter((workout) => workout.id !== id)
+  // --------------------------------
+  // MARK WORKOUT AS DONE
+  // --------------------------------
+  const markAsDone = (id: number) => {
+    const workout = plan.find(
+      (item) => item.id === id
     );
 
-    toast.success("Workout removed from saved.");
+    setPlan((currentPlan) =>
+      currentPlan.filter(
+        (item) => item.id !== id
+      )
+    );
+
+    if (workout) {
+      toast.success(
+        `${workout.name} marked as done!`
+      );
+    } else {
+      toast.success("Workout marked as done!");
+    }
+  };
+
+  // --------------------------------
+  // SAVE WORKOUT
+  // --------------------------------
+  const saveWorkout = (workout: Workout) => {
+    const alreadySaved = saved.some(
+      (item) => item.id === workout.id
+    );
+
+    if (alreadySaved) {
+      toast.info("This workout is already saved.");
+      return;
+    }
+
+    setSaved((currentSaved) => [
+      ...currentSaved,
+      workout,
+    ]);
+
+    toast.success(
+      `${workout.name} saved for later.`
+    );
+  };
+
+  // --------------------------------
+  // REMOVE SAVED WORKOUT
+  // --------------------------------
+  const removeSavedWorkout = (id: number) => {
+    const workout = saved.find(
+      (item) => item.id === id
+    );
+
+    setSaved((currentSaved) =>
+      currentSaved.filter(
+        (item) => item.id !== id
+      )
+    );
+
+    if (workout) {
+      toast.info(
+        `${workout.name} removed from saved workouts.`
+      );
+    } else {
+      toast.info("Workout removed from saved.");
+    }
   };
 
   return (
@@ -118,16 +170,13 @@ export function FitnessProvider({
       }}
     >
       {children}
-
-      <ToastContainer
-        position="bottom-right"
-        autoClose={2500}
-        theme="dark"
-      />
     </FitnessContext.Provider>
   );
 }
 
+// --------------------------------
+// CUSTOM HOOK
+// --------------------------------
 export function useFitness() {
   const context = useContext(FitnessContext);
 

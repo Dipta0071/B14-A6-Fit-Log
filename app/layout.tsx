@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Oswald } from "next/font/google";
+
 import "./globals.css";
+import "react-toastify/dist/ReactToastify.css";
+
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { FitnessProvider } from "@/context/FitnessContext";
@@ -21,15 +24,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={oswald.variable}>
+    <html
+      lang="en"
+      className={oswald.variable}
+    >
       <body className="bg-black text-white">
+
         <FitnessProvider>
+
           <Navbar />
 
-          <main>{children}</main>
+          <main>
+            {children}
+          </main>
 
           <Footer />
+
         </FitnessProvider>
+
       </body>
     </html>
   );
