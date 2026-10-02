@@ -15,3 +15,11 @@ export async function getWorkouts(): Promise<Workout[]> {
 
   return workouts;
 }
+
+export async function getWorkoutById(
+  id: number
+): Promise<Workout | undefined> {
+  const workouts = await getWorkouts();
+
+  return workouts.find((workout) => workout.id === id);
+}

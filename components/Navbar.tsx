@@ -2,17 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useFitness } from "@/context/FitnessContext";
 
-interface NavbarProps {
-  planCount?: number;
-  savedCount?: number;
-}
-
-export default function Navbar({
-  planCount = 0,
-  savedCount = 0,
-}: NavbarProps) {
+export default function Navbar() {
   const pathname = usePathname();
+
+  const { plan, saved } = useFitness();
 
   const workoutsActive =
     pathname === "/" ||
@@ -33,7 +28,7 @@ export default function Navbar({
           FITLOG
         </Link>
 
-        {/* Navigation */}
+        {/* Main navigation */}
         <div className="flex items-center gap-1 sm:gap-2">
           <Link
             href="/"
@@ -58,27 +53,23 @@ export default function Navbar({
           </Link>
         </div>
 
-        {/* Status Badges */}
+        {/* Counters */}
         <div className="flex items-center gap-2">
-
-          {/* Plan Badge */}
           <Link
-            href="/my-plan"
-            className="flex items-center gap-1.5 rounded-full bg-[#ccff00] px-3 py-1.5 text-[10px] font-black text-black transition hover:bg-[#d8ff3f]"
+            href="/plan"
+            className="flex items-center gap-1.5 rounded-full bg-[#ccff00] px-3 py-1.5 text-[10px] font-black text-black transition hover:bg-[#d9ff4d]"
           >
             <span>Plan</span>
-            <span>{planCount}</span>
+            <span>{plan.length}</span>
           </Link>
 
-          {/* Saved Badge */}
           <Link
-            href="/my-plan"
+            href="/plan"
             className="flex items-center gap-1.5 rounded-full border border-zinc-600 px-3 py-1.5 text-[10px] font-black text-white transition hover:border-zinc-400"
           >
             <span>Saved</span>
-            <span>{savedCount}</span>
+            <span>{saved.length}</span>
           </Link>
-
         </div>
       </nav>
     </header>

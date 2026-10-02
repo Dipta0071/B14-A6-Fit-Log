@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Oswald } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { FitnessProvider } from "@/context/FitnessContext";
 
 const oswald = Oswald({
   subsets: ["latin"],
@@ -21,9 +23,13 @@ export default function RootLayout({
   return (
     <html lang="en" className={oswald.variable}>
       <body className="bg-black text-white">
-        <Navbar planCount={0} savedCount={0} />
+        <FitnessProvider>
+          <Navbar />
 
-        <main>{children}</main>
+          <main>{children}</main>
+
+          <Footer />
+        </FitnessProvider>
       </body>
     </html>
   );
